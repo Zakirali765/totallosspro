@@ -4,94 +4,104 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- 🌐 SEO Meta Tags -->
+  <!-- ✅ SEO Meta Tags -->
   <title>Total Loss Pro - Vehicle Total Loss Calculator</title>
-  <meta name="description" content="Easily calculate whether your car is a total loss using our free online tool. Just enter your vehicle's value and repair cost. Perfect for insurance claims and vehicle assessments.">
-  <meta name="keywords" content="total loss calculator, vehicle assessment, car repair cost, car insurance calculator, total damage estimator, car value checker">
-  <meta name="author" content="Zakir Ali" />
+  <meta name="description" content="Use Total Loss Pro to instantly determine if your car is a total loss. Just enter the vehicle's market value and repair estimate. Fast, free, and insurance-friendly.">
+  <meta name="keywords" content="total loss calculator, car value checker, vehicle damage estimator, insurance claim tool, repair cost calculator, total damage calculator, auto insurance tool">
+  <meta name="author" content="Zakir Ali">
   <meta name="robots" content="index, follow">
 
-  <!-- 🌍 Open Graph (Facebook, LinkedIn, etc.) -->
+  <!-- 🌍 Open Graph for Facebook & LinkedIn -->
   <meta property="og:title" content="Total Loss Pro - Vehicle Total Loss Calculator" />
-  <meta property="og:description" content="Free and simple tool to check if your vehicle is a total loss. Trusted by drivers and auto insurance users." />
+  <meta property="og:description" content="Instantly find out if your vehicle is a total loss. Just enter your car’s value and repair cost. Trusted by drivers, repair shops, and insurance users worldwide." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://totallosspro.netlify.app/" />
   <meta property="og:image" content="https://totallosspro.netlify.app/assets/og-image.png" />
 
   <!-- 🐦 Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Total Loss Pro - Vehicle Assessment Calculator" />
-  <meta name="twitter:description" content="Use our free tool to determine if your car is a total loss after an accident. Fast, mobile-friendly, and accurate." />
+  <meta name="twitter:title" content="Total Loss Pro - Vehicle Total Loss Calculator" />
+  <meta name="twitter:description" content="Check if your car is a total loss after an accident. Free, easy, and mobile-friendly calculator for quick vehicle assessments." />
   <meta name="twitter:image" content="https://totallosspro.netlify.app/assets/og-image.png" />
 
-  <!-- 🔒 Canonical URL -->
+  <!-- 🔗 Canonical URL -->
   <link rel="canonical" href="https://totallosspro.netlify.app/" />
 
-  <!-- 🌟 Favicon (Optional) -->
-  <link rel="icon" type="image/png" href="https://totallosspro.netlify.app/assets/favicon.ico" />
+  <!-- 🌟 Favicon -->
+  <link rel="icon" href="https://totallosspro.netlify.app/assets/favicon.ico" type="image/x-icon" />
 
-  <!-- 🖌️ CSS -->
+  <!-- 🖌️ External Stylesheet -->
   <link rel="stylesheet" href="css/style.css" />
 
-    <style>
-        .page { display: none; }
-        .page.active { display: block; }
-        .hero-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .dark .hero-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.8s ease-in-out;
-        }
-        .animate-slide-up {
-            animation: slideUp 0.6s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .calculator-card {
-            transition: all 0.3s ease;
-        }
-        .calculator-card:hover {
-            transform: translateY(-5px);
-        }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .accordion-content.open {
-            max-height: 500px;
-        }
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .calculator-section {
-            display: none;
-        }
-        .calculator-section.active {
-            display: block;
-        }
-        .calculator-btn.active {
-            opacity: 0.7;
-        }
-    </style>
+  <!-- 💻 Custom Inline CSS -->
+  <style>
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .hero-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .dark .hero-bg {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    .animate-slide-up {
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .calculator-card {
+      transition: transform 0.3s ease;
+    }
+    .calculator-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .accordion-content.open {
+      max-height: 500px;
+    }
+
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3498db;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .calculator-section {
+      display: none;
+    }
+    .calculator-section.active {
+      display: block;
+    }
+    .calculator-btn.active {
+      opacity: 0.7;
+    }
+  </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
     <!-- Navigation -->
