@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TotalLoss Pro - Vehicle Insurance Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .page { display: none; }
+        .page.active { display: block; }
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .dark .hero-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        .animate-slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .calculator-card {
+            transition: all 0.3s ease;
+        }
+        .calculator-card:hover {
+            transform: translateY(-5px);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .accordion-content.open {
+            max-height: 500px;
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .calculator-section {
+            display: none;
+        }
+        .calculator-section.active {
+            display: block;
+        }
+        .calculator-btn.active {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-lg fixed w-full top-0 z-50 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-car-crash text-2xl text-blue-600 dark:text-blue-400 mr-2"></i>
+                        <span class="text-xl font-bold text-gray-900 dark:text-white">TotalLoss Pro</span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" onclick="showPage('home')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Home</a>
+                    <a href="#" onclick="showPage('calculator')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Calculator</a>
+                    <a href="#" onclick="showPage('about')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">About</a>
+                    <a href="#" onclick="showPage('faq')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">FAQ</a>
+                    <a href="#" onclick="showPage('more')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">More</a>
+                    <a href="#" onclick="showPage('contact')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Contact</a>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#" onclick="showPage('home'); toggleMobileMenu()" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                <a href="#" onclick="showPage('calculator'); toggleMobileMenu()" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Calculator</a>
+                <a href="#" onclick="showPage('about'); toggleMobileMenu()" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">About</a>
+                <a href="#" onclick="showPage('faq'); toggleMobileMenu()" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">FAQ</a>
+                <a href="#" onclick="showPage('more'); toggleMobileMenu()" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">More</a>
+                <a href="#" onclick="showPage('contact'); toggleMobileMenu()" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <!-- Hero Section -->
+            <section class="hero-bg text-white py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6">Calculate Your Vehicle's Total Loss Instantly</h1>
+                    <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">A powerful tool for insurance claims, car accidents, and vehicle value estimations</p>
+                    <div class="space-x-4">
+                        <button onclick="showPage('calculator')" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transform hover:scale-105 transition-all duration-200">
+                            Start Calculating
+                        </button>
+                        <button onclick="showPage('about')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all duration-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works -->
+            <section class="py-16 bg-white dark:bg-gray-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12 animate-slide-up">
+                        <h2 class="text-3xl font-bold mb-4">How It Works</h2>
+                        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Get accurate total loss calculations in three simple steps</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="text-center animate-slide-up">
+                            <div class="bg-blue-100 dark:bg-blue-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-car text-2xl text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">1. Enter Vehicle Details</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Input your vehicle's information including year, make, model, and current condition</p>
+                        </div>
+                        <div class="text-center animate-slide-up">
+                            <div class="bg-green-100 dark:bg-green-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-calculator text-2xl text-green-600 dark:text-green-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">2. Calculate Values</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Our advanced algorithms calculate your vehicle's actual cash value and repair costs</p>
+                        </div>
+                        <div class="text-center animate-slide-up">
+                            <div class="bg-purple-100 dark:bg-purple-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-chart-line text-2xl text-purple-600 dark:text-purple-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">3. Get Results</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Receive detailed reports showing whether your vehicle is a total loss</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section class="py-16 bg-gray-50 dark:bg-gray-900">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold mb-4">Features</h2>
+                        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Everything you need for accurate vehicle loss calculations</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                            <i class="fas fa-percent text-3xl text-blue-600 dark:text-blue-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold mb-2">Total Loss %</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Calculate the exact percentage to determine total loss status</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                            <i class="fas fa-dollar-sign text-3xl text-green-600 dark:text-green-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold mb-2">Vehicle Value</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Get accurate market value estimates for your vehicle</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                            <i class="fas fa-tools text-3xl text-orange-600 dark:text-orange-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold mb-2">Repair Costs</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Estimate repair costs with detailed breakdowns</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                            <i class="fas fa-mobile-alt text-3xl text-purple-600 dark:text-purple-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold mb-2">Mobile Ready</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Access calculations anywhere on any device</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials -->
+            <section class="py-16 bg-white dark:bg-gray-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold mb-4">What Our Users Say</h2>
+                        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Trusted by thousands for accurate vehicle loss calculations</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">JS</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold">John Smith</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Insurance Agent</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 dark:text-gray-300">"TotalLoss Pro has revolutionized how I handle claims. The calculations are spot-on and save me hours of work."</p>
+                            <div class="flex text-yellow-400 mt-2">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">MJ</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold">Maria Johnson</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Car Owner</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 dark:text-gray-300">"After my accident, TotalLoss Pro helped me understand my vehicle's value and negotiate better with insurance."</p>
+                            <div class="flex text-yellow-400 mt-2">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">RW</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold">Robert Wilson</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Auto Dealer</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 dark:text-gray-300">"Essential tool for our dealership. We use it daily to assess trade-ins and provide accurate customer quotes."</p>
+                            <div class="flex text-yellow-400 mt-2">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Calculator Page -->
+        <div id="calculator" class="page">
+            <section class="py-16 bg-gray-50 dark:bg-gray-900 min-h-screen">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Vehicle Calculators</h2>
+                        <p class="text-xl text-gray-600 dark:text-gray-400">Choose from our comprehensive calculators to get accurate vehicle assessments</p>
+                    </div>
+                    
+                    <!-- Calculator Selection -->
+                    <div class="flex flex-wrap justify-center gap-4 mb-8">
+                        <button onclick="showCalculator('total-loss')" id="btn-total-loss" class="calculator-btn bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 active">
+                            <i class="fas fa-percentage text-white mr-2"></i>
+                            Total Loss %
+                        </button>
+                        <button onclick="showCalculator('vehicle-value')" id="btn-vehicle-value" class="calculator-btn bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+                            <i class="fas fa-car text-white mr-2"></i>
+                            Vehicle Value
+                        </button>
+                        <button onclick="showCalculator('repair-cost')" id="btn-repair-cost" class="calculator-btn bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+                            <i class="fas fa-wrench text-white mr-2"></i>
+                            Repair Cost
+                        </button>
+                    </div>
+
+                    <!-- Total Loss Calculator -->
+                    <div id="total-loss-calc" class="calculator-section active">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+                                <i class="fas fa-percentage text-green-600 dark:text-green-400 mr-2"></i>
+                                Total Loss Percentage Calculator
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Vehicle Value ($)</label>
+                                    <input type="number" id="tl-vehicle-value" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="25000">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Repair Cost ($)</label>
+                                    <input type="number" id="tl-repair-cost" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="18000">
+                                </div>
+                                <div class="flex gap-4">
+                                    <button onclick="calculateTotalLoss()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-colors duration-200">
+                                        <i class="fas fa-calculator text-white mr-2"></i>
+                                        Calculate
+                                    </button>
+                                    <button onclick="resetTotalLoss()" class="px-6 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition-colors duration-200">
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="tl-result" class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hidden">
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-2">Result:</h4>
+                                <div id="tl-result-content" class="text-gray-700 dark:text-gray-300"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Value Calculator -->
+                    <div id="vehicle-value-calc" class="calculator-section hidden">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+                                <i class="fas fa-car text-purple-600 dark:text-purple-400 mr-2"></i>
+                                Vehicle Value Calculator
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Make</label>
+                                        <input type="text" id="vv-make" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Toyota">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Model</label>
+                                        <input type="text" id="vv-model" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Camry">
+                                    </div>
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Year</label>
+                                        <input type="number" id="vv-year" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="2020">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mileage</label>
+                                        <input type="number" id="vv-mileage" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="45000">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Condition</label>
+                                    <select id="vv-condition" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        <option value="excellent">Excellent</option>
+                                        <option value="good" selected>Good</option>
+                                        <option value="fair">Fair</option>
+                                        <option value="poor">Poor</option>
+                                    </select>
+                                </div>
+                                <div class="flex gap-4">
+                                    <button onclick="calculateVehicleValue()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors duration-200">
+                                        <i class="fas fa-calculator text-white mr-2"></i>
+                                        Calculate Value
+                                    </button>
+                                    <button onclick="resetVehicleValue()" class="px-6 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition-colors duration-200">
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="vv-result" class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hidden">
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-2">Estimated Value:</h4>
+                                <div id="vv-result-content" class="text-gray-700 dark:text-gray-300"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Repair Cost Calculator -->
+                    <div id="repair-cost-calc" class="calculator-section hidden">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+                                <i class="fas fa-wrench text-red-600 dark:text-red-400 mr-2"></i>
+                                Repair Cost Calculator
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Damage Type</label>
+                                    <select id="rc-damage-type" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                        <option value="minor">Minor Damage (Scratches, Dents)</option>
+                                        <option value="moderate">Moderate Damage (Panel Replacement)</option>
+                                        <option value="major">Major Damage (Structural)</option>
+                                        <option value="collision">Collision Damage</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Affected Areas (Select multiple)</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" value="front" class="damage-area text-red-600 focus:ring-red-500">
+                                            <span class="text-gray-700 dark:text-gray-300">Front End</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" value="rear" class="damage-area text-red-600 focus:ring-red-500">
+                                            <span class="text-gray-700 dark:text-gray-300">Rear End</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" value="left" class="damage-area text-red-600 focus:ring-red-500">
+                                            <span class="text-gray-700 dark:text-gray-300">Left Side</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" value="right" class="damage-area text-red-600 focus:ring-red-500">
+                                            <span class="text-gray-700 dark:text-gray-300">Right Side</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" value="roof" class="damage-area text-red-600 focus:ring-red-500">
+                                            <span class="text-gray-700 dark:text-gray-300">Roof</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" value="interior" class="damage-area text-red-600 focus:ring-red-500">
+                                            <span class="text-gray-700 dark:text-gray-300">Interior</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Vehicle Type</label>
+                                    <select id="rc-vehicle-type" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                        <option value="economy">Economy Car</option>
+                                        <option value="midsize" selected>Mid-size Car</option>
+                                        <option value="luxury">Luxury Car</option>
+                                        <option value="suv">SUV</option>
+                                        <option value="truck">Truck</option>
+                                    </select>
+                                </div>
+                                <div class="flex gap-4">
+                                    <button onclick="calculateRepairCost()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition-colors duration-200">
+                                        <i class="fas fa-calculator text-white mr-2"></i>
+                                        Calculate Cost
+                                    </button>
+                                    <button onclick="resetRepairCost()" class="px-6 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition-colors duration-200">
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="rc-result" class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hidden">
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-2">Estimated Repair Cost:</h4>
+                                <div id="rc-result-content" class="text-gray-700 dark:text-gray-300"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- About Page -->
+        <div id="about" class="page">
+            <section class="py-16 bg-white dark:bg-gray-800 min-h-screen">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h1 class="text-4xl font-bold mb-4">About TotalLoss Pro</h1>
+                        <p class="text-xl text-gray-600 dark:text-gray-400">Your trusted partner in vehicle insurance calculations</p>
+                    </div>
+
+                    <div class="space-y-12">
+                        <!-- Who We Are -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-8">
+                            <h2 class="text-2xl font-bold mb-4">Who We Are</h2>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                TotalLoss Pro is a cutting-edge platform designed to simplify the complex world of vehicle insurance calculations. Founded by insurance professionals and automotive experts, we understand the challenges faced by car owners, insurance agents, and auto dealers when determining vehicle values and total loss scenarios.
+                            </p>
+                        </div>
+
+                        <!-- Our Mission -->
+                        <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-8">
+                            <h2 class="text-2xl font-bold mb-4 text-blue-800 dark:text-blue-200">Our Mission</h2>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                                Our mission is to empower individuals and professionals with accurate, easy-to-use tools that provide transparency in vehicle valuations and insurance claim processes. We believe everyone deserves fair treatment and accurate information when dealing with vehicle losses.
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                                <li>Provide accurate and reliable vehicle valuation tools</li>
+                                <li>Simplify complex insurance calculations for everyone</li>
+                                <li>Educate users about their rights and options</li>
+                                <li>Promote transparency in the insurance claim process</li>
+                            </ul>
+                        </div>
+
+                        <!-- Why Trust Us -->
+                        <div class="bg-green-50 dark:bg-green-900 rounded-lg p-8">
+                            <h2 class="text-2xl font-bold mb-4 text-green-800 dark:text-green-200">Why You Can Trust Us</h2>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2 text-green-700 dark:text-green-300">Expert Team</h3>
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm">Our team includes certified insurance professionals, automotive appraisers, and data scientists with decades of combined experience.</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2 text-green-700 dark:text-green-300">Accurate Data</h3>
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm">We use real-time market data and industry-standard methodologies to ensure our calculations are as accurate as possible.</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2 text-green-700 dark:text-green-300">User Privacy</h3>
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm">Your personal information and vehicle data are never stored or shared. All calculations are performed securely and privately.</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2 text-green-700 dark:text-green-300">Regular Updates</h3>
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm">Our algorithms and data sources are continuously updated to reflect current market conditions and regulatory changes.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA -->
+                        <div class="text-center bg-gray-900 dark:bg-gray-800 rounded-lg p-8 text-white">
+                            <h2 class="text-2xl font-bold mb-4">Ready to Get Started?</h2>
+                            <p class="mb-6 text-gray-300">Join thousands of satisfied users who trust TotalLoss Pro for their vehicle calculations.</p>
+                            <button onclick="showPage('calculator')" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transform hover:scale-105 transition-all duration-200">
+                                Start Calculating Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- FAQ Page -->
+        <div id="faq" class="page">
+            <section class="py-16 bg-gray-50 dark:bg-gray-900 min-h-screen">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h1 class="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
+                        <p class="text-xl text-gray-600 dark:text-gray-400">Find answers to common questions about vehicle total loss and insurance calculations</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(1)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">What is a total loss vehicle?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-1"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-1">
+                                <p class="text-gray-600 dark:text-gray-400">A total loss vehicle is one where the cost to repair exceeds a certain percentage of the vehicle's actual cash value (ACV). This threshold varies by state and insurance company, typically ranging from 70% to 100% of the ACV.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(2)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">How is vehicle value calculated?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-2"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-2">
+                                <p class="text-gray-600 dark:text-gray-400">Vehicle value is calculated based on multiple factors including year, make, model, mileage, condition, location, and current market data. We use industry-standard valuation methods similar to those used by insurance companies and appraisers.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(3)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">Can I appeal an insurance company's total loss decision?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-3"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-3">
+                                <p class="text-gray-600 dark:text-gray-400">Yes, you can appeal a total loss decision. You have the right to dispute the insurance company's valuation by providing evidence of your vehicle's higher value, such as recent maintenance records, upgrades, or comparable vehicle sales in your area.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(4)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">What factors affect repair cost estimates?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-4"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-4">
+                                <p class="text-gray-600 dark:text-gray-400">Repair costs depend on the extent of damage, parts availability, labor rates in your area, whether OEM or aftermarket parts are used, and additional factors like paint matching and hidden damage discovered during repair.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(5)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">How accurate are the calculations?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-5"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-5">
+                                <p class="text-gray-600 dark:text-gray-400">Our calculations are based on industry-standard methodologies and real-time market data. While they provide excellent estimates, actual values may vary based on local market conditions, specific vehicle history, and individual circumstances.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(6)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">What should I do if my car is declared a total loss?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-6"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-6">
+                                <p class="text-gray-600 dark:text-gray-400">If your car is declared a total loss, review the insurance company's valuation, remove personal belongings, consider whether to accept the settlement or negotiate, and understand your options regarding the salvage title and buyback.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(7)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">Do total loss thresholds vary by state?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-7"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-7">
+                                <p class="text-gray-600 dark:text-gray-400">Yes, total loss thresholds vary by state. Some states have specific percentages (like 75% or 80%), while others allow insurance companies to set their own thresholds. Check our Resources page for state-specific information.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(8)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">Can I keep my car if it's declared a total loss?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-8"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-8">
+                                <p class="text-gray-600 dark:text-gray-400">In most cases, yes. You can often retain ownership of your total loss vehicle by accepting a reduced settlement amount. The vehicle will receive a salvage title, and you'll be responsible for any repairs needed to make it roadworthy.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(9)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">How long does the total loss claim process take?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-9"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-9">
+                                <p class="text-gray-600 dark:text-gray-400">The total loss claim process typically takes 1-3 weeks from the time of the accident, depending on the complexity of the case, investigation requirements, and how quickly all parties respond with required documentation.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <button onclick="toggleFAQ(10)" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <span class="font-semibold">Are your calculations free to use?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-200" id="icon-10"></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-4" id="content-10">
+                                <p class="text-gray-600 dark:text-gray-400">Yes, all our basic calculators are completely free to use. We believe everyone should have access to accurate vehicle valuation information. No registration or payment is required to use our standard calculation tools.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- More Page (Resources) -->
+        <div id="more" class="page">
+            <section class="py-16 bg-white dark:bg-gray-800 min-h-screen">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h1 class="text-4xl font-bold mb-4">Resources & More</h1>
+                        <p class="text-xl text-gray-600 dark:text-gray-400">Comprehensive guides and information to help you navigate insurance claims and vehicle regulations</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12">
+                        <!-- Insurance Claims Process -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-8">
+                            <div class="flex items-center mb-6">
+                                <div class="bg-blue-100 dark:bg-blue-900 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-clipboard-list text-blue-600 dark:text-blue-400 text-xl"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold">Insurance Claims Process</h2>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">1</div>
+                                    <div>
+                                        <h3 class="font-semibold mb-2">Report the Accident</h3>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">Contact your insurance company immediately after the accident. Provide all necessary details including time, location, and involved parties.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">2</div>
+                                    <div>
+                                        <h3 class="font-semibold mb-2">Document Everything</h3>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">Take photos of damage, gather witness information, and keep all receipts related to the accident and temporary transportation.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">3</div>
+                                    <div>
+                                        <h3 class="font-semibold mb-2">Vehicle Inspection</h3>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">An adjuster will inspect your vehicle to assess damage and determine if it's repairable or a total loss.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">4</div>
+                                    <div>
+                                        <h3 class="font-semibold mb-2">Receive Settlement Offer</h3>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">Review the settlement offer carefully. You have the right to negotiate if you believe the valuation is too low.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">5</div>
+                                    <div>
+                                        <h3 class="font-semibold mb-2">Finalize the Claim</h3>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">Once you accept the settlement, transfer the vehicle title and receive your payment. Handle any outstanding loan balance.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Pro Tips:</h4>
+                                <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                                    <li>• Keep detailed records of all communications</li>
+                                    <li>• Get multiple repair estimates if disputing total loss</li>
+                                    <li>• Consider hiring a public adjuster for complex claims</li>
+                                    <li>• Know your state's total loss threshold percentage</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- State Laws & Regulations -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-8">
+                            <div class="flex items-center mb-6">
+                                <div class="bg-green-100 dark:bg-green-900 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-gavel text-green-600 dark:text-green-400 text-xl"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold">State Laws & Regulations</h2>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div>
+                                    <h3 class="font-semibold mb-3">Total Loss Thresholds by State</h3>
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+                                        <div class="grid grid-cols-3 bg-gray-100 dark:bg-gray-600 text-sm font-semibold">
+                                            <div class="p-3">State</div>
+                                            <div class="p-3">Threshold</div>
+                                            <div class="p-3">Method</div>
+                                        </div>
+                                        <div class="text-sm">
+                                            <div class="grid grid-cols-3 border-b border-gray-200 dark:border-gray-600">
+                                                <div class="p-3">California</div>
+                                                <div class="p-3">100%</div>
+                                                <div class="p-3">ACV</div>
+                                            </div>
+                                            <div class="grid grid-cols-3 border-b border-gray-200 dark:border-gray-600">
+                                                <div class="p-3">Florida</div>
+                                                <div class="p-3">80%</div>
+                                                <div class="p-3">ACV</div>
+                                            </div>
+                                            <div class="grid grid-cols-3 border-b border-gray-200 dark:border-gray-600">
+                                                <div class="p-3">Texas</div>
+                                                <div class="p-3">100%</div>
+                                                <div class="p-3">ACV</div>
+                                            </div>
+                                            <div class="grid grid-cols-3 border-b border-gray-200 dark:border-gray-600">
+                                                <div class="p-3">New York</div>
+                                                <div class="p-3">75%</div>
+                                                <div class="p-3">ACV</div>
+                                            </div>
+                                            <div class="grid grid-cols-3 border-b border-gray-200 dark:border-gray-600">
+                                                <div class="p-3">Illinois</div>
+                                                <div class="p-3">No Limit</div>
+                                                <div class="p-3">Insurer</div>
+                                            </div>
+                                            <div class="grid grid-cols-3">
+                                                <div class="p-3">Georgia</div>
+                                                <div class="p-3">100%</div>
+                                                <div class="p-3">ACV</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="font-semibold mb-3">Key Regulatory Points</h3>
+                                    <div class="space-y-3">
+                                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                            <h4 class="font-medium mb-1">Consumer Rights</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">You have the right to dispute valuations, request independent appraisals, and appeal insurance decisions in most states.</p>
+                                        </div>
+                                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                            <h4 class="font-medium mb-1">Salvage Titles</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">Total loss vehicles typically receive salvage titles, which affect future resale value and insurance coverage options.</p>
+                                        </div>
+                                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                            <h4 class="font-medium mb-1">Time Limits</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">Most states require insurance companies to settle total loss claims within 30-60 days of receiving all necessary documentation.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 bg-green-50 dark:bg-green-900 rounded-lg">
+                                    <h4 class="font-semibold text-green-800 dark:text-green-200 mb-2">Important Notes:</h4>
+                                    <ul class="text-sm text-green-700 dark:text-green-300 space-y-1">
+                                        <li>• Laws vary significantly by state</li>
+                                        <li>• Some states allow insurers to set their own thresholds</li>
+                                        <li>• Consult local regulations for specific requirements</li>
+                                        <li>• Consider state-specific consumer protection laws</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Resources -->
+                    <div class="mt-12 bg-gray-900 dark:bg-gray-800 rounded-lg p-8 text-white">
+                        <h2 class="text-2xl font-bold mb-6 text-center">Additional Resources</h2>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <i class="fas fa-book text-3xl text-blue-400 mb-3"></i>
+                                <h3 class="font-semibold mb-2">Educational Articles</h3>
+                                <p class="text-gray-300 text-sm">Stay informed with our latest articles on vehicle insurance and claims.</p>
+                            </div>
+                            <div class="text-center">
+                                <i class="fas fa-phone text-3xl text-green-400 mb-3"></i>
+                                <h3 class="font-semibold mb-2">Expert Support</h3>
+                                <p class="text-gray-300 text-sm">Get help from our team of insurance and automotive experts.</p>
+                            </div>
+                            <div class="text-center">
+                                <i class="fas fa-users text-3xl text-purple-400 mb-3"></i>
+                                <h3 class="font-semibold mb-2">Community Forum</h3>
+                                <p class="text-gray-300 text-sm">Connect with other users and share experiences and advice.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contact" class="page">
+            <section class="py-16 bg-gray-50 dark:bg-gray-900 min-h-screen">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h1 class="text-4xl font-bold mb-4">Contact Us</h1>
+                        <p class="text-xl text-gray-600 dark:text-gray-400">Get in touch with our team for support or questions</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <!-- Contact Form -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                            <h2 class="text-2xl font-bold mb-6">Send us a Message</h2>
+                            <form id="contact-form" class="space-y-6">
+                                <div>
+                                    <label for="contact-name" class="block text-sm font-medium mb-2">Full Name *</label>
+                                    <input type="text" id="contact-name" name="name" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Your full name">
+                                    <div class="error-message text-red-500 text-sm mt-1 hidden" id="name-error"></div>
+                                </div>
+                                
+                                <div>
+                                    <label for="contact-email" class="block text-sm font-medium mb-2">Email Address *</label>
+                                    <input type="email" id="contact-email" name="email" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="your.email@example.com">
+                                    <div class="error-message text-red-500 text-sm mt-1 hidden" id="email-error"></div>
+                                </div>
+                                
+                                <div>
+                                    <label for="contact-subject" class="block text-sm font-medium mb-2">Subject</label>
+                                    <select id="contact-subject" name="subject" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Select a subject</option>
+                                        <option value="general">General Inquiry</option>
+                                        <option value="support">Technical Support</option>
+                                        <option value="feedback">Feedback</option>
+                                        <option value="business">Business Partnership</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for="contact-message" class="block text-sm font-medium mb-2">Message *</label>
+                                    <textarea id="contact-message" name="message" required rows="6" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Please describe your question or concern..."></textarea>
+                                    <div class="error-message text-red-500 text-sm mt-1 hidden" id="message-error"></div>
+                                </div>
+                                
+                                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center">
+                                    <span id="submit-text">Send Message</span>
+                                    <div id="submit-loading" class="loading-spinner ml-2 hidden"></div>
+                                </button>
+                            </form>
+                            
+                            <div id="form-success" class="mt-4 p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg hidden">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    <span class="text-green-700 dark:text-green-300">Message sent successfully! We'll get back to you soon.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="space-y-8">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                                <h2 class="text-2xl font-bold mb-6">Get in Touch</h2>
+                                <div class="space-y-4">
+                                    <div class="flex items-center">
+                                        <div class="bg-blue-100 dark:bg-blue-900 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-envelope text-blue-600 dark:text-blue-400"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold">Email</h3>
+                                            <p class="text-gray-600 dark:text-gray-400">support@totallosspro.com</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center">
+                                        <div class="bg-green-100 dark:bg-green-900 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-phone text-green-600 dark:text-green-400"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold">Phone</h3>
+                                            <p class="text-gray-600 dark:text-gray-400">1-800-TOTALLOSS</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center">
+                                        <div class="bg-purple-100 dark:bg-purple-900 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-clock text-purple-600 dark:text-purple-400"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold">Business Hours</h3>
+                                            <p class="text-gray-600 dark:text-gray-400">Mon-Fri: 9AM-6PM EST</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-lg p-8 text-white">
+                                <h2 class="text-2xl font-bold mb-4">Need Immediate Help?</h2>
+                                <p class="mb-4 opacity-90">If you're dealing with an active insurance claim or urgent vehicle situation, our priority support team is here to help.</p>
+                                <button onclick="showPage('faq')" class="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200">
+                                    Check FAQ First
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 dark:bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="col-span-1">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-car-crash text-2xl text-blue-400 mr-2"></i>
+                        <span class="text-xl font-bold">TotalLoss Pro</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Your trusted platform for accurate vehicle total loss calculations and insurance guidance.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Navigation</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="showPage('home')" class="text-gray-400 hover:text-white transition-colors duration-200">Home</a></li>
+                        <li><a href="#" onclick="showPage('calculator')" class="text-gray-400 hover:text-white transition-colors duration-200">Calculator</a></li>
+                        <li><a href="#" onclick="showPage('about')" class="text-gray-400 hover:text-white transition-colors duration-200">About</a></li>
+                        <li><a href="#" onclick="showPage('contact')" class="text-gray-400 hover:text-white transition-colors duration-200">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="showPage('more')" class="text-gray-400 hover:text-white transition-colors duration-200">Insurance Claims Process</a></li>
+                        <li><a href="#" onclick="showPage('more')" class="text-gray-400 hover:text-white transition-colors duration-200">State Laws & Regulations</a></li>
+                        <li><a href="#" onclick="showPage('faq')" class="text-gray-400 hover:text-white transition-colors duration-200">FAQ & Support</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Stay Updated</h3>
+                    <p class="text-gray-400 text-sm mb-4">Subscribe to receive updates about new features and insurance industry news.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Enter your email" class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-l-lg text-sm focus:outline-none focus:border-blue-500">
+                        <button class="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors duration-200">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400 text-sm">&copy; 2024 TotalLoss Pro. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global Variables
+        let currentPage = 'home';
+        let currentCalculator = 'total-loss';
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+            }
+            
+            // Initialize active states
+            updateActiveNavLink();
+            showCalculator('total-loss');
+        });
+
+        // Navigation Functions
+        function showPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(page).classList.add('active');
+            currentPage = page;
+            
+            // Update navigation
+            updateActiveNavLink();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function updateActiveNavLink() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-blue-600', 'dark:text-blue-400', 'font-semibold');
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            }
+        }
+
+        // Calculator Functions
+        function showCalculator(type) {
+            // Hide all calculators
+            document.querySelectorAll('.calculator-section').forEach(calc => {
+                calc.classList.remove('active');
+                calc.classList.add('hidden');
+            });
+            
+            // Show selected calculator
+            const targetCalc = document.getElementById(type + '-calc');
+            if (targetCalc) {
+                targetCalc.classList.add('active');
+                targetCalc.classList.remove('hidden');
+            }
+            
+            // Update buttons
+            document.querySelectorAll('.calculator-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const targetBtn = document.getElementById('btn-' + type);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+            
+            currentCalculator = type;
+        }
+
+        // New Calculator Functions
+
+        // Total Loss Calculator
+        function calculateTotalLoss() {
+            const vehicleValue = parseFloat(document.getElementById('tl-vehicle-value').value);
+            const repairCost = parseFloat(document.getElementById('tl-repair-cost').value);
+            
+            if (!vehicleValue || !repairCost || vehicleValue <= 0 || repairCost <= 0) {
+                alert('Please enter valid values for both vehicle value and repair cost');
+                return;
+            }
+            
+            const percentage = (repairCost / vehicleValue) * 100;
+            const isTotal = percentage >= 75; // 75% threshold
+            
+            const resultContent = document.getElementById('tl-result-content');
+            resultContent.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl font-bold ${isTotal ? 'text-red-600' : 'text-green-600'} mb-2">
+                        ${percentage.toFixed(1)}%
+                    </div>
+                    <div class="text-lg font-medium mb-2 ${isTotal ? 'text-red-600' : 'text-green-600'}">
+                        ${isTotal ? 'TOTAL LOSS' : 'REPAIRABLE'}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        ${isTotal ? 
+                            'Your vehicle exceeds the total loss threshold and will likely be declared a total loss.' :
+                            'Your vehicle is below the total loss threshold and should be repairable.'
+                        }
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('tl-result').classList.remove('hidden');
+        }
+
+        function resetTotalLoss() {
+            document.getElementById('tl-vehicle-value').value = '';
+            document.getElementById('tl-repair-cost').value = '';
+            document.getElementById('tl-result').classList.add('hidden');
+        }
+
+        // Vehicle Value Calculator
+        function calculateVehicleValue() {
+            const make = document.getElementById('vv-make').value.trim();
+            const model = document.getElementById('vv-model').value.trim();
+            const year = parseInt(document.getElementById('vv-year').value);
+            const mileage = parseInt(document.getElementById('vv-mileage').value);
+            const condition = document.getElementById('vv-condition').value;
+            
+            if (!make || !model || !year || !mileage || !condition) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (year < 1990 || year > 2024) {
+                alert('Please enter a valid year between 1990 and 2024');
+                return;
+            }
+            
+            // Basic calculation (simplified for demo)
+            let baseValue = 25000;
+            const currentYear = new Date().getFullYear();
+            const age = currentYear - year;
+            
+            // Depreciation
+            baseValue -= (age * 1500);
+            
+            // Mileage adjustment
+            const avgMileage = age * 12000;
+            const mileageDiff = mileage - avgMileage;
+            baseValue -= (mileageDiff * 0.1);
+            
+            // Condition adjustment
+            const conditionMultipliers = {
+                'excellent': 1.15,
+                'good': 1.0,
+                'fair': 0.85,
+                'poor': 0.65
+            };
+            baseValue *= conditionMultipliers[condition];
+            
+            // Make adjustment (simplified)
+            const makeMultipliers = {
+                'toyota': 1.05,
+                'honda': 1.05,
+                'bmw': 1.2,
+                'mercedes': 1.25,
+                'audi': 1.15,
+                'ford': 0.95,
+                'chevrolet': 0.95,
+                'nissan': 1.0
+            };
+            baseValue *= (makeMultipliers[make.toLowerCase()] || 1.0);
+            
+            // Ensure minimum value
+            baseValue = Math.max(baseValue, 2000);
+            
+            const lowRange = baseValue * 0.9;
+            const highRange = baseValue * 1.1;
+            
+            const resultContent = document.getElementById('vv-result-content');
+            resultContent.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+
+                        $${Math.round(baseValue).toLocaleString()}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        Range: $${Math.round(lowRange).toLocaleString()} - $${Math.round(highRange).toLocaleString()}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        Based on ${year} ${make} ${model} with ${mileage.toLocaleString()} miles in ${condition} condition
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('vv-result').classList.remove('hidden');
+        }
+
+        function resetVehicleValue() {
+            document.getElementById('vv-make').value = '';
+            document.getElementById('vv-model').value = '';
+            document.getElementById('vv-year').value = '';
+            document.getElementById('vv-mileage').value = '';
+            document.getElementById('vv-condition').value = 'good';
+            document.getElementById('vv-result').classList.add('hidden');
+        }
+
+        // Repair Cost Calculator
+        function calculateRepairCost() {
+            const damageType = document.getElementById('rc-damage-type').value;
+            const vehicleType = document.getElementById('rc-vehicle-type').value;
+            const checkedAreas = document.querySelectorAll('.damage-area:checked');
+            
+            if (!damageType || !vehicleType) {
+                alert('Please select damage type and vehicle type');
+                return;
+            }
+            
+            if (checkedAreas.length === 0) {
+                alert('Please select at least one affected area');
+                return;
+            }
+            
+            // Base costs by damage type
+            const damageTypeCosts = {
+                'minor': 800,
+                'moderate': 3500,
+                'major': 8000,
+                'collision': 12000
+            };
+            
+            // Vehicle type multipliers
+            const vehicleTypeMultipliers = {
+                'economy': 0.8,
+                'midsize': 1.0,
+                'luxury': 1.5,
+                'suv': 1.2,
+                'truck': 1.3
+            };
+            
+            // Area multipliers
+            const areaMultipliers = {
+                'front': 1.2,
+                'rear': 1.1,
+                'left': 1.0,
+                'right': 1.0,
+                'roof': 1.3,
+                'interior': 0.8
+            };
+            
+            let baseCost = damageTypeCosts[damageType];
+            let vehicleMultiplier = vehicleTypeMultipliers[vehicleType];
+            
+            // Calculate area multiplier
+            let areaMultiplier = 0;
+            checkedAreas.forEach(area => {
+                areaMultiplier += areaMultipliers[area.value];
+            });
+            areaMultiplier = Math.max(areaMultiplier, 1); // At least 1x multiplier
+            
+            const totalCost = baseCost * vehicleMultiplier * areaMultiplier;
+            
+            const areas = Array.from(checkedAreas).map(area => {
+                const label = area.nextElementSibling.textContent;
+                return label;
+            });
+            
+            const resultContent = document.getElementById('rc-result-content');
+            resultContent.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
+
+                        $${Math.round(totalCost).toLocaleString()}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                        <div><strong>Damage Type:</strong> ${damageType.charAt(0).toUpperCase() + damageType.slice(1)}</div>
+                        <div><strong>Vehicle Type:</strong> ${vehicleType.charAt(0).toUpperCase() + vehicleType.slice(1)}</div>
+                        <div><strong>Affected Areas:</strong> ${areas.join(', ')}</div>
+                        <div class="mt-2 text-xs">
+                            <em>This is an estimate. Actual costs may vary based on local labor rates, parts availability, and hidden damage.</em>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('rc-result').classList.remove('hidden');
+        }
+
+        function resetRepairCost() {
+            document.getElementById('rc-damage-type').value = 'minor';
+            document.getElementById('rc-vehicle-type').value = 'midsize';
+            document.querySelectorAll('.damage-area').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('rc-result').classList.add('hidden');
+        }
+
+        // FAQ Functions
+        function toggleFAQ(num) {
+            const content = document.getElementById('content-' + num);
+            const icon = document.getElementById('icon-' + num);
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Close all other FAQs
+                document.querySelectorAll('.accordion-content').forEach(content => {
+                    content.classList.remove('open');
+                });
+                document.querySelectorAll('[id^="icon-"]').forEach(icon => {
+                    icon.style.transform = 'rotate(0deg)';
+                });
+                
+                // Open clicked FAQ
+                content.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Contact Form Functions
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.classList.add('hidden');
+            });
+            
+            // Get form data
+            const name = document.getElementById('contact-name').value.trim();
+            const email = document.getElementById('contact-email').value.trim();
+            const message = document.getElementById('contact-message').value.trim();
+            
+            let isValid = true;
+            
+            // Validation
+            if (!name) {
+                showError('name-error', 'Please enter your full name');
+                isValid = false;
+            }
+            
+            if (!email) {
+                showError('email-error', 'Please enter your email address');
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError('email-error', 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            if (!message) {
+                showError('message-error', 'Please enter your message');
+                isValid = false;
+            } else if (message.length < 10) {
+                showError('message-error', 'Message must be at least 10 characters long');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Show loading
+                document.getElementById('submit-text').style.display = 'none';
+                document.getElementById('submit-loading').classList.remove('hidden');
+                
+                // Simulate form submission
+                setTimeout(() => {
+                    document.getElementById('submit-text').style.display = 'inline';
+                    document.getElementById('submit-loading').classList.add('hidden');
+                    document.getElementById('form-success').classList.remove('hidden');
+                    document.getElementById('contact-form').reset();
+                    
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        document.getElementById('form-success').classList.add('hidden');
+                    }, 5000);
+                }, 2000);
+            }
+        });
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Smooth scroll for anchor links
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('a[href^="#"]')) {
+                e.preventDefault();
+                const target = document.querySelector(e.target.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+
+        // Add scroll-based animations
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
+
+        function handleScrollAnimations() {
+            const animatedElements = document.querySelectorAll('.animate-slide-up');
+            animatedElements.forEach(element => {
+                if (isInViewport(element)) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleScrollAnimations);
+        window.addEventListener('load', handleScrollAnimations);
+    </script>
+</body>
+</html>
