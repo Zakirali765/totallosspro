@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="https://totallosspro.netlify.app/assets/og-image.png">
     <meta name="google-site-verification" content="3vOmPESUxabipUFd1xu0b92AEpY5CsYvKjLfXp2HMjU" />
-    <title>TotalLoss Pro - Vehicle Insurance Calculator</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 
     <!-- SEO Meta Tags -->
     <title>TotalLoss Pro - Vehicle Insurance Calculator</title>
@@ -86,16 +84,44 @@
             opacity: 0.7;
         }
     </style>
-    <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Total Loss Pro",
-  "url": "https://totallosspro.netlify.app",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "All",
-  "description": "Free online calculator to determine total loss value of your car using industry formulas."
-}
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Total Loss Calculator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "url": "https://totallosspro.netlify.app/#total-loss-calc"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Total Loss Pro",
+    "url": "https://totallosspro.netlify.app",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "description": "Free online calculator to determine total loss value of your car using industry formulas."
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Vehicle Value Calculator",
+    "url": "https://totallosspro.netlify.app/#vehicle-value-calc",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "description": "Free tool to estimate the current value of your car based on make, model, year, and condition."
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Repair Cost Estimator",
+    "url": "https://totallosspro.netlify.app/#repair-cost-calc",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "description": "Estimate repair costs for your damaged vehicle using industry-standard values and region-based adjustments."
+  }
+]
 </script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -315,21 +341,23 @@
                     </div>
 
                     <!-- Total Loss Calculator -->
-                    <div id="total-loss-calc" class="calculator-section active">
+                    <section id="total-loss-calc" class="calculator-section active" aria-label="Total Loss Percentage Calculator">
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto transition-colors duration-300">
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
                                 <i class="fas fa-percentage text-green-600 dark:text-green-400 mr-2"></i>
                                 Total Loss Percentage Calculator
                             </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center"> Use this Total Loss Percentage Calculator to determine if your vehicle is considered a total loss based on its value and repair cost. </p>
+
                             
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Vehicle Value ($)</label>
-                                    <input type="number" id="tl-vehicle-value" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="25000">
+                                    <label for="tl-vehicle-value" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Vehicle Value ($)</label>
+<input id="tl-vehicle-value" name="tl-vehicle-value" type="number" class="w-full px-4 py-2 ..." />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Repair Cost ($)</label>
-                                    <input type="number" id="tl-repair-cost" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="18000">
+                                    <label for="tl-repair-cost" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Repair Cost ($)</label>
+<input id="tl-repair-cost" name="tl-repair-cost" type="number" class="w-full px-4 py-2 ..." />
                                 </div>
                                 <div class="flex gap-4">
                                     <button onclick="calculateTotalLoss()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-colors duration-200">
@@ -360,8 +388,9 @@
                             <div class="space-y-4">
                                 <div class="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Make</label>
-                                        <input type="text" id="vv-make" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Toyota">
+                                        <label for="make" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Make</label>
+<input type="text" id="make" name="make"class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Toyota">
+
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Model</label>
@@ -405,14 +434,16 @@
                         </div>
                     </div>
 
-                    <!-- Repair Cost Calculator -->
-                    <div id="repair-cost-calc" class="calculator-section hidden">
-                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto transition-colors duration-300">
-                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-                                <i class="fas fa-wrench text-red-600 dark:text-red-400 mr-2"></i>
-                                Repair Cost Calculator
-                            </h3>
-                            
+                <!-- Repair Cost Calculator -->
+<section id="repair-cost-calc" class="calculator-section hidden" aria-label="Repair Cost Calculator">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto transition-colors duration-300">
+
+        <h2 class="sr-only">Repair Cost Estimator Tool</h2>
+
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+            <i class="fas fa-wrench text-red-600 dark:text-red-400 mr-2"></i>
+            Repair Cost Calculator
+        </h3>                            
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Damage Type</label>
@@ -478,10 +509,7 @@
                                 <div id="rc-result-content" class="text-gray-700 dark:text-gray-300"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+                  </section>
 
         <!-- About Page -->
         <div id="about" class="page">
